@@ -26,6 +26,10 @@ together all the related models (e.g.: Trivial, Team and Question in TrivialCont
 Meanwhile, models tend to include only logic related to themselves or their attributes. That is why, for example, the Trivial Model manages teams and questions, while these ones only work
 with themselves.
 
+#### The singleton Trivial model
+
+I put in practice the Singleton pattern studied in class with this model. Since we only need an entity trivial for every game and the game runs locally, we are only interested in having one instance of the game at a time.
+
 ## Configuration
 
 In order to create a game there should be a 'questions' directory at the root of the deployment (as it is included in this repository). Since there are five types of questions, there are five files
@@ -40,6 +44,8 @@ containing questions from each type. Files must have the names of the five types
 
 Since Java is a compiled language it cannot generate on runtime certain data structures such as Enum classes. In another kind of language we could read the filenames and set them as entries of a 
 dynamically generated enum type. In Java the alternative could be to use a global array containing the filenames and using it every time we need to check the type of the question.
-For this basic project, it may not be a big deal, but, for further updates, an Enum class is likely to be way more elegant, clear and easy to use. Additionally, this approach allows us to use generic
-datatypes with the QuestionType enum class.
+For this basic project, it may not be a big deal, but, for further updates, an Enum class is likely to be way more elegant, clear and easy to use. Additionally, this approach allows us to use generic datatypes with the QuestionType enum class.
 
+## Execution
+
+The main function runs the main loop of the application and every game consists of a loop through all the turns of a game until a team wins. Once we have a winner, the app runs a new game and asks for new team names.
