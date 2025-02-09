@@ -5,7 +5,7 @@ import java.util.EnumSet;
 /**
  * Represents a KeepTrivial Team.
  */
-public class Team
+public class Team implements Cloneable
 {
 	/**
 	 * Set with the cheeses acquired by the team. Each cheese is represented by a QuestionType.
@@ -25,6 +25,13 @@ public class Team
 	{
 		this.name = name;
 		this.cheeses = EnumSet.noneOf(QuestionType.class);
+	}
+	
+	public Team clone()
+	{
+		Team newTeam = new Team(this.name);
+		newTeam.cheeses = this.cheeses.clone();
+		return newTeam;
 	}
 	
 	/**

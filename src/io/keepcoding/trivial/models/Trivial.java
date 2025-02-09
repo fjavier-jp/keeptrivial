@@ -50,56 +50,59 @@ public class Trivial
 	}
 	
 	/**
-	 * Loads all the questions in files.
+	 * Loads all the questions in files if they are not already loaded.
 	 * @throws IOException
 	 */
 	public void loadQuestions() throws IOException
 	{
-		File folder = new File("questions");
-		List<Question> questionsList = new ArrayList<Question>();
-		if (!folder.exists())
+		if (questions.isEmpty())
 		{
-			throw new NotDirectoryException("questions");
-		}
-		else
-		{
-			File[] files = folder.listFiles();
-			for (File file : files)
+			File folder = new File("questions");
+			List<Question> questionsList = new ArrayList<Question>();
+			if (!folder.exists())
 			{
-				if (!file.isFile() || !file.getName().endsWith(".txt"))
+				throw new NotDirectoryException("questions");
+			}
+			else
+			{
+				File[] files = folder.listFiles();
+				for (File file : files)
 				{
-					throw new FileNotFoundException(file.getAbsolutePath());
-				}
-				else
-				{
-					// We asume types are correct.
-					QuestionType questionType = QuestionType.valueOf(file.getName().substring(0, file.getName().length() - 4).toUpperCase());
-					
-					BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-					String line;
-					List<String> block = new ArrayList<String>();
-					while ((line = bufferedReader.readLine()) != null)
+					if (!file.isFile() || !file.getName().endsWith(".txt"))
 					{
-						block.add(line);
-						if (block.size() == 6)
-						{
-							String questionString = block.get(0);
-							String[] options = { block.get(1), block.get(2), block.get(3), block.get(4) };
-							int rightOption = Integer.parseInt(block.get(5));
-							questionsList.add(new Question(
-								questionString,
-								questionType,
-								rightOption,
-								options
-							));
-							block.clear();	
-						}
+						throw new FileNotFoundException(file.getAbsolutePath());
 					}
-					bufferedReader.close();
+					else
+					{
+						// We asume types are correct.
+						QuestionType questionType = QuestionType.valueOf(file.getName().substring(0, file.getName().length() - 4).toUpperCase());
+						
+						BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+						String line;
+						List<String> block = new ArrayList<String>();
+						while ((line = bufferedReader.readLine()) != null)
+						{
+							block.add(line);
+							if (block.size() == 6)
+							{
+								String questionString = block.get(0);
+								String[] options = { block.get(1), block.get(2), block.get(3), block.get(4) };
+								int rightOption = Integer.parseInt(block.get(5));
+								questionsList.add(new Question(
+									questionString,
+									questionType,
+									rightOption,
+									options
+								));
+								block.clear();	
+							}
+						}
+						bufferedReader.close();
+					}
 				}
 			}
+			questions = questionsList;	
 		}
-		questions = questionsList;
 	}
 	
 	/**
@@ -134,6 +137,14 @@ public class Trivial
 	public void addTeam(Team team)
 	{
 		teams.add(team);
+	}
+	
+	/**
+	 * Resets the teams in the game.
+	 */
+	public void resetTeams()
+	{
+		teams = new ArrayList<Team>();
 	}
 	
 	/**

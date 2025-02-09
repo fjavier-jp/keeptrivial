@@ -14,6 +14,22 @@ import io.keepcoding.trivial.models.Trivial;
  */
 public class TrivialController
 {
+	private QuestionController questionController = new QuestionController();
+	
+	/**
+	 * Creates the game and starts it, showing the winner at the end.
+	 * In case KeepTrivial files are not correctly configured, it will print an error message.
+	 */
+	public void start() throws IOException
+	{
+		do
+		{
+			create();
+			CLITrivial.announceWinner(play().getName());
+		}
+		while(true);
+	}
+	
 	/**
 	 * Creates and initializes KeepTrivial with the questions in the file system and the teams inserted by the user.
 	 * @throws IOException in case of files having a wrong name or not being able to read them. 
@@ -33,43 +49,54 @@ public class TrivialController
 	
 	/**
 	 * Primary function controlling the game's workflow.
-	 * Loops repeatedly through all the teams until one wins the game.
-	 * For every turn, it shows the question to the team, evaluates the answer and adds a cheese in case the answer was right.
+	 * 1. Loops repeatedly through all the teams until one wins the game.
+	 * 2. For every turn, it shows the question to the team, evaluates the answer and adds a cheese in case the answer was right.
+	 * 3. When a winner is crowned, it resets the teams.
 	 * @return Winner Team.
 	 */
 	public Team play()
 	{
-		QuestionController questionController = new QuestionController();
 		Trivial trivial = Trivial.getInstance();
 		int index = 0;
 		Team currentTeam;
-		Question question;
-		boolean isCorrectAnswer;
 		do
 		{
 			currentTeam = trivial.getTeam(index);
-			question = trivial.getQuestion(currentTeam);
-			try
-			{
-				int option = Integer.parseInt(questionController.getUserAnswer(currentTeam, question));
-				isCorrectAnswer = option == question.getRightOption();
-			}
-			catch (NumberFormatException exception)
-			{
-				isCorrectAnswer = false;
-			}
-			
-			if (isCorrectAnswer)
-			{
-				currentTeam.addCheese(question.getType());
-			}
-			questionController.showEvaluation(isCorrectAnswer);
-			CLITrivial.showScoreBoard(trivial.getScore());			// This should work with a request/response system but well...
-			
+			runTurn(currentTeam);
 			index = (index + 1) % Constants.N_TEAMS;
 		}
 		while (!trivial.isWinner(currentTeam));
 		
-		return currentTeam;
+		Team winnerTeam = currentTeam.clone();
+		trivial.resetTeams();
+		
+		return winnerTeam;
+	}
+	
+	/**
+	 * Runs a team's turn.
+	 * @param currentTeam with the team of the current turn.
+	 */
+	public void runTurn(Team currentTeam)
+	{
+		Trivial trivial = Trivial.getInstance();
+		Question question = trivial.getQuestion(currentTeam);
+		boolean isCorrectAnswer;
+		try
+		{
+			int option = Integer.parseInt(questionController.getUserAnswer(currentTeam, question));
+			isCorrectAnswer = option == question.getRightOption();
+		}
+		catch (NumberFormatException exception)
+		{
+			isCorrectAnswer = false;
+		}
+		
+		if (isCorrectAnswer)
+		{
+			currentTeam.addCheese(question.getType());
+		}
+		questionController.showEvaluation(isCorrectAnswer);
+		CLITrivial.showScoreBoard(trivial.getScore());			// This should work with a request/response system but well...
 	}
 }

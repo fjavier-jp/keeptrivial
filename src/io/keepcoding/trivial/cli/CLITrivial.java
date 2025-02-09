@@ -10,6 +10,7 @@ public class CLITrivial
 	 */
 	public static void create()
 	{
+		System.out.println("NEW GAME");
 		System.out.println("Configure the teams");
 	}
 
@@ -27,6 +28,12 @@ public class CLITrivial
 		{
 			System.out.println(score);
 		}
+		System.out.println();
+	}
+	
+	public static void announceWinner(String teamName)
+	{
+		System.out.println("WINNER: " + teamName);
 		System.out.println();
 	}
 }
